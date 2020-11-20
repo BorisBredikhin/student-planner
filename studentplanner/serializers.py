@@ -1,0 +1,37 @@
+from rest_framework import serializers
+from . import models as m
+
+class SemesterSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+        model = m.Semester
+        fields = '__all__'
+
+class TeacherSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+        model = m.Teacher
+        fields = '__all__'
+
+class DisciplineSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+       model = m.Discipline
+       fields = '__all__'
+
+class WeightSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+        model = m.Weight
+        fields = '__all__'
+
+class TaskSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+        model = m.Task
+        fields = '__all__'
