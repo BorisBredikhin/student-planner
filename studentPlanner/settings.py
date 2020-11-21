@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'studentplanner.apps.StudentplannerConfig',
 ]
 
-SITE_OD = 1
+SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -82,6 +82,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'studentPlanner.wsgi.application'
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.TokenAuthentication',
+)
 
 
 # Database
@@ -139,5 +147,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }

@@ -1,9 +1,12 @@
+import {getCookie} from "../utils";
+
 export interface LoginResponse {
     key: string
 }
 
 export default class AppApi {
     public readonly apiRoot: string
+    private token: string|null = getCookie("token")
 
     constructor(apiRoot: string) {
         this.apiRoot = apiRoot
@@ -19,6 +22,23 @@ export default class AppApi {
             body: formData
         })
         let json = await r.json() as LoginResponse
-        return json.key
+
+        document.cookie = `token=${json.key}`
+
+        return (this.token=json.key)
+    }
+
+    public async addSemester(data: FormData) {
+        console.log(data)
+        let r = await fetch(this.apiRoot + "/api/semester/", {
+            method: "POST",
+            body: data,
+            headers: {
+                "Authorization": `Token ${this.token}`
+            }
+        })
+        console.log(r)
+        let json = await r.json()
+        return json
     }
 }

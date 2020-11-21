@@ -19,10 +19,11 @@ from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path(r'api/', include('studentplanner.urls')),
     path(r'rest-auth/', include('rest_auth.urls')),
     path(r'rest-auth/registration/', include('rest_auth.registration.urls')),
 path('openapi', get_schema_view(
-        title="Your Project",
+        title="Student Planner",
         description="API for all things …",
         version="1.0.0"
     ), name='openapi-schema'),
