@@ -2,6 +2,7 @@ import React, {useContext} from "react";
 import {AppContext} from "../appContext";
 import {FloatingWindow} from "./FloatingWindow";
 import {getById} from "../utils";
+import {Link} from "react-router-dom";
 
 
 export function AddSemester() {
@@ -40,7 +41,7 @@ export function AddSemester() {
             </form>
             <div>
                 <button style={{marginRight: "5px"}} onClick={save}>Сохранить</button>
-                <button style={{marginLeft: "5px"}}>Отменить</button>
+                <Link to="/"><button style={{marginLeft: "5px"}} >Отменить</button></Link>
             </div>
         </div>
     </FloatingWindow>
