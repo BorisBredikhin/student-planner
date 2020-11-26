@@ -41,4 +41,13 @@ export default class AppApi {
         let json = await r.json()
         return json
     }
+
+    public async getSemesters(){
+        let r = await fetch(this.apiRoot + "/api/semester/", {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${this.token}`
+            }
+        })
+    }
 }

@@ -1,12 +1,8 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
 from studentplanner import viewsets
 
-# Create a router and register our viewsets with it.
-router = DefaultRouter()
-router.register(r'semester', viewsets.SemesterViewSet)
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
-    path('', include(router.urls)),
+    path('semester/', viewsets.SemesterViewSet.as_view({'get':'get'})),
 ]
