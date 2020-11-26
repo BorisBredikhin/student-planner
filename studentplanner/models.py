@@ -22,13 +22,13 @@ class Semester(models.Model):
     name = models.CharField(max_length=50, verbose_name="Название")
     start_date = models.DateField(verbose_name="Дата начала")
     end_date = models.DateField(verbose_name="Дата окончания")
-    disiplines = models.TextField(default="[]", verbose_name="Дисциплины")
+    disciplines = models.TextField(default="[]", verbose_name="Дисциплины")
 
 
 class Teacher(models.Model):
     user = models.ForeignKey(get_user_model(), models.CASCADE, verbose_name="Пользователь")
     name = models.CharField(max_length=50, verbose_name="Имя")
-    disiplines = models.TextField(default="[]", verbose_name="Дисциплины")
+    disciplines = models.TextField(default="[]", verbose_name="Дисциплины")
 
 
 class Discipline(models.Model):

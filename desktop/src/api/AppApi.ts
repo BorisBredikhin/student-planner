@@ -4,6 +4,30 @@ export interface LoginResponse {
     key: string
 }
 
+export class Semester {
+    public readonly id: number
+    public name: string
+    public startDate: Date
+    public endDate: Date
+    public DisciplineIds: number[]
+
+    constructor(s: any) {
+        console.log(s)
+        this.id=s.id
+        this.name=s.name
+        this.startDate = s.start_date
+        this.endDate = s.end_date
+        this.DisciplineIds = (s.disciplines as string)
+            .slice(
+                1,
+                (s.disciplines as string).length
+            )
+            .split(', ')
+            .map(parseInt)
+    }
+
+}
+
 export default class AppApi {
     public readonly apiRoot: string
     private token: string|null = getCookie("token")
@@ -49,5 +73,8 @@ export default class AppApi {
                 "Authorization": `Token ${this.token}`
             }
         })
+        let json = await r.json();
+        console.log(json)
+        return (json).semesters.map((s: any)=>new Semester(s));
     }
 }
