@@ -15,6 +15,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.Teacher
         fields = '__all__'
+        extra_kwargs = {'user': {'required': False}}
 
 class DisciplineSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField()
@@ -22,6 +23,7 @@ class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
        model = m.Discipline
        fields = '__all__'
+       extra_kwargs = {'user': {'required': False}}
 
 class WeightSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField()
@@ -29,6 +31,7 @@ class WeightSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.Weight
         fields = '__all__'
+        extra_kwargs = {'user': {'required': False}}
 
 class TaskSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField()
@@ -36,3 +39,4 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.Task
         fields = '__all__'
+        extra_kwargs = {'user': {'required': False}}

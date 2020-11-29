@@ -13,6 +13,8 @@ def get_teachers(text: str) -> Iterable['Teacher']:
 
 
 def text_to_objects(text, objects):
+    if text == '[]':
+        return []
     return map(lambda pk: objects.get(pk=pk),
                map(lambda pk: int(pk.strip()), text[1:-1].split(',')))
 

@@ -36,6 +36,19 @@ export default class AppApi {
         this.apiRoot = apiRoot
     }
 
+    private async postFormData(path: string, data: FormData){
+        let r = await fetch(this.apiRoot + path, {
+            method: "POST",
+            body: data,
+            headers: {
+                "Authorization": `Token ${this.token}`
+            }
+        })
+        console.log(r)
+        let json = await r.json()
+        return json
+    }
+
     public async login(username: string, password: string) {
         let formData = new FormData()
         formData.append("username", username)
@@ -54,16 +67,7 @@ export default class AppApi {
 
     public async addSemester(data: FormData) {
         console.log(data)
-        let r = await fetch(this.apiRoot + "/api/semester/", {
-            method: "POST",
-            body: data,
-            headers: {
-                "Authorization": `Token ${this.token}`
-            }
-        })
-        console.log(r)
-        let json = await r.json()
-        return json
+        return await this.postFormData("/api/semester/", data)
     }
 
     public async getSemesters(){
@@ -76,5 +80,9 @@ export default class AppApi {
         let json = await r.json();
         console.log(json)
         return (json).semesters.map((s: any)=>new Semester(s));
+    }
+
+    public async addDiscipline(data: FormData) {
+        return await this.postFormData("/api/discipline/", data)
     }
 }
