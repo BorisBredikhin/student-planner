@@ -1,6 +1,8 @@
 import React, {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext";
 import {Semester} from "../api/AppApi";
+import {Link} from "react-router-dom";
+import {linkSytle} from "../styles";
 
 export function MySemestersList() {
     const context = useContext(AppContext)
@@ -15,9 +17,9 @@ export function MySemestersList() {
         })
     // }
     console.log(loaded)
-    return <div>
+    return <div style={{margin: "0 auto"}}>
         <h2>Мои семестры</h2>
         {loaded
-            ?.map((s, idx)=><p key={idx}>{s.name}</p>)}
+            ?.map((s, idx)=><Link key={idx} to={`/s/${idx}`} style={linkSytle}>{s.name}</Link>)}
     </div>
 }

@@ -82,6 +82,19 @@ export default class AppApi {
         return (json).semesters.map((s: any)=>new Semester(s));
     }
 
+    public async getSemester(id: string){
+        let r = await fetch(this.apiRoot + "/api/semester/?id="+id, {
+            method: "GET",
+
+            headers: {
+                "Authorization": `Token ${this.token}`
+            }
+        })
+        let json = await r.json();
+        console.log(json)
+        return new Semester(json.semester);
+    }
+
     public async addDiscipline(data: FormData) {
         return await this.postFormData("/api/discipline/", data)
     }

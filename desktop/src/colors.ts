@@ -3,5 +3,6 @@ export default {
     textOnMain: "#000021",
     secondary: "#0c0",
     alternativeSecondary: "#1240ab",
-    transparent: "#88888888"
+    transparent: "#88888888",
+    linkBorder: "#888",
 }

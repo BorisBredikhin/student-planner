@@ -9,6 +9,7 @@ import {getCookie} from "./utils";
 import {AddSemester} from "./components/AddSemester";
 import {MySemestersList} from "./components/MySemestersList";
 import {AddDiscipline} from "./components/AddDiscipline";
+import {Semester} from "./components/Semester";
 
 
 function App() {
@@ -19,9 +20,10 @@ function App() {
         <div className="App">
             <AppHeader/>
             <BrowserRouter>
-                <Route path="/">
-                    <Link to = "/addsem">Добавить семестр</Link>
+                <Link to = "/addsem">Добавить семестр</Link>
+                    {" "}
                     <Link to = "/adddis">Добавить дисциплину</Link>
+                    <Route path="/" exact>
                     <MySemestersList/>
                 </Route>
                 <Route path="/addsem">
@@ -29,6 +31,9 @@ function App() {
                 </Route>
                 <Route path="/adddis">
                     <AddDiscipline/>
+                </Route>
+                <Route path="/s/:id">
+                    <Semester/>
                 </Route>
             </BrowserRouter>
         </div>

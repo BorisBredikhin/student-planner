@@ -10,12 +10,21 @@ class SemesterViewSet(GenericViewSet):
 
     def get(self, request):
         if _id := self.request.query_params.get("id", False):
-            return serializers.SemesterSerializer(models.Semester.objects.get(pk=_id))
+            return JsonResponse({
+                "semester": serializers
+                    .SemesterSerializer(
+                        models
+                            .Semester
+                            .objects
+                            .get(pk=_id)
+                )
+                .data
+            })
         return JsonResponse({
             "semesters": serializers.SemesterSerializer(
-                models\
-                    .Semester\
-                    .objects\
+                models
+                    .Semester
+                    .objects
                     .filter(user=self.request.user),
                 many=True).data
         })
