@@ -16,7 +16,7 @@ class SemesterViewSet(GenericViewSet):
                         models
                             .Semester
                             .objects
-                            .get(pk=_id)
+                            .get(pk=int(_id))
                 )
                 .data
             })
@@ -79,3 +79,15 @@ class DisciplineViewSet(GenericViewSet):
             sem.save()
             return JsonResponse({'status': HTTP_201_CREATED})
         return JsonResponse({"status": HTTP_400_BAD_REQUEST})
+
+class TaskViewSet(GenericViewSet):
+    serializer_class = serializers.TaskSerializer
+
+    def get(self, request):
+        return JsonResponse({
+            "tasks": serializers.TaskSerializer(
+                models
+                    .Task
+                    .objects
+                    .filter(user=self.request.user),
+                many=True).data})
