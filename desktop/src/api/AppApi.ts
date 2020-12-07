@@ -7,23 +7,17 @@ export interface LoginResponse {
 export class Semester {
     public readonly id: number
     public name: string
-    public startDate: Date
-    public endDate: Date
-    public DisciplineIds: number[]
+    public start_date: Date
+    public end_date: Date
+    public disciplineIds: number[]
 
     constructor(s: any) {
         console.log(s)
         this.id=s.id
         this.name=s.name
-        this.startDate = s.start_date
-        this.endDate = s.end_date
-        this.DisciplineIds = (s.disciplines as string)
-            .slice(
-                1,
-                (s.disciplines as string).length
-            )
-            .split(', ')
-            .map(parseInt)
+        this.start_date = s.start_date
+        this.end_date = s.end_date
+        this.disciplineIds = JSON.parse(s.disciplines as string)
     }
 
 }
@@ -111,6 +105,9 @@ export default class AppApi extends Api{
 export class SemesterApi extends ModelAPI {
     apiPath = this.apiRoot + "/api/semester/";
 
+    async get(id: string): Promise<Semester> {
+        return new Semester((await super.get(id)).semester);
+    }
 }
 
 class TaskAPI extends ModelAPI{

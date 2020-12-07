@@ -22,6 +22,7 @@ export function Semester(){
 
     return <div>
         <h2>Семестр {loaded?.name}</h2>
-        <p>{loaded?.startDate} – {loaded?.endDate}</p>
+        <p>{loaded?.start_date} – {loaded?.end_date}</p>
+        <pre>{loaded?.disciplineIds}</pre>
     </div>
 }
