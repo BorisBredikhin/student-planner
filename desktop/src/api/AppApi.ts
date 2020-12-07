@@ -28,16 +28,13 @@ export class Semester {
 
 }
 
-export default class AppApi {
-    public readonly apiRoot: string
-    private token: string|null = getCookie("token")
+abstract class Api {
+    public readonly apiRoot: string = "http://127.0.0.1:8000"
+    protected token: string|null = getCookie("token")
 
-    constructor(apiRoot: string) {
-        this.apiRoot = apiRoot
-    }
 
-    private async postFormData(path: string, data: FormData){
-        let r = await fetch(this.apiRoot + path, {
+    protected async postFormData(path: string, data: FormData){
+        let r = await fetch(path, {
             method: "POST",
             body: data,
             headers: {
@@ -47,6 +44,47 @@ export default class AppApi {
         console.log(r)
         let json = await r.json()
         return json
+    }
+}
+
+abstract class ModelAPI extends Api {
+    public abstract apiPath: string
+    public async add(data: FormData) {
+        console.log(data)
+        return await this.postFormData(this.apiPath, data)
+    }
+    public async get(id: string){
+        let r = await fetch(this.apiPath + "?id="+id, {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${this.token}`
+            }
+        })
+        let json = await r.json();
+        console.log(json)
+        return json;
+    }
+    public async getAll(){
+        let r = await fetch(this.apiPath, {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${this.token}`
+            }
+        })
+        let json = await r.json();
+        console.log(json)
+        return json;
+    }
+}
+
+export default class AppApi extends Api{
+    public readonly tasks: TaskAPI
+    public readonly Semester: SemesterApi;
+
+    constructor() {
+        super()
+        this.tasks = new TaskAPI()
+        this.Semester = new SemesterApi()
     }
 
     public async login(username: string, password: string) {
@@ -65,37 +103,16 @@ export default class AppApi {
         return (this.token=json.key)
     }
 
-    public async addSemester(data: FormData) {
-        console.log(data)
-        return await this.postFormData("/api/semester/", data)
-    }
-
-    public async getSemesters(){
-        let r = await fetch(this.apiRoot + "/api/semester/", {
-            method: "GET",
-            headers: {
-                "Authorization": `Token ${this.token}`
-            }
-        })
-        let json = await r.json();
-        console.log(json)
-        return (json).semesters.map((s: any)=>new Semester(s));
-    }
-
-    public async getSemester(id: string){
-        let r = await fetch(this.apiRoot + "/api/semester/?id="+id, {
-            method: "GET",
-
-            headers: {
-                "Authorization": `Token ${this.token}`
-            }
-        })
-        let json = await r.json();
-        console.log(json)
-        return new Semester(json.semester);
-    }
-
     public async addDiscipline(data: FormData) {
         return await this.postFormData("/api/discipline/", data)
     }
+}
+
+export class SemesterApi extends ModelAPI {
+    apiPath = this.apiRoot + "/api/semester/";
+
+}
+
+class TaskAPI extends ModelAPI{
+    apiPath = this.apiRoot + "/api/task/"
 }

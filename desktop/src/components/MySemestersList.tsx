@@ -12,8 +12,9 @@ export function MySemestersList() {
             if (!loaded)
             context
                 .appApi
-                .getSemesters()
-                .then(setLoaded)
+                .Semester
+                .getAll()
+                .then(r => setLoaded(r.semesters))
         })
     // }
     console.log(loaded)

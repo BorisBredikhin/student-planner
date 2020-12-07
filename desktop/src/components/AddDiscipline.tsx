@@ -14,8 +14,9 @@ export function AddDiscipline() {
         if (!semestersList){
             context
                 .appApi
-                .getSemesters()
-                .then(setSemestersList)
+                .Semester
+                .getAll()
+                .then(r => setSemestersList(r.semesters))
         }
     })
 

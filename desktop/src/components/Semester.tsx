@@ -11,7 +11,11 @@ export function Semester(){
 
     useEffect(()=>{
         if (!loaded)
-            context.appApi.getSemester(id).then(setLoaded)
+            context
+                .appApi
+                .Semester
+                .get(id)
+                .then(setLoaded)
     })
 
     console.log(loaded)

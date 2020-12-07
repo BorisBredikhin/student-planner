@@ -19,7 +19,7 @@ export function AddSemester() {
                             .value
                     )
             )
-        context.appApi.addSemester(data)
+        context.appApi.Semester.add(data)
     }
 
     return <FloatingWindow>
