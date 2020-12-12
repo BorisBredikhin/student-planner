@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {Semester as Sem} from "../api/AppApi";
 import {AppContext} from "../appContext";
@@ -15,7 +15,11 @@ export function Semester(){
                 .appApi
                 .Semester
                 .get(id)
-                .then(setLoaded)
+                .then(r => {
+                    setLoaded(r)
+                })
+        else if (loaded!.disciplines == [])
+            loaded!.loadDisciplines().then(()=>console.log(loaded))
     })
 
     console.log(loaded)
@@ -23,6 +27,11 @@ export function Semester(){
     return <div>
         <h2>Семестр {loaded?.name}</h2>
         <p>{loaded?.start_date} – {loaded?.end_date}</p>
-        <pre>{loaded?.disciplineIds}</pre>
+        <ul>
+            {
+                loaded?.disciplines?.map(d=>
+                <li><Link to={"/d/"+d.id}>{d.name}</Link></li>)
+            }
+        </ul>
     </div>
 }

@@ -44,7 +44,7 @@ class DisciplineViewSet(GenericViewSet):
 
     def get(self, request: Request):
         if _id := self.request.query_params.get("id", False):
-            return serializers.DisciplineSerializer(models.Discipline.objects.get(pk=_id))
+            return JsonResponse({"discipline":serializers.DisciplineSerializer(models.Discipline.objects.get(pk=_id))})
         if semester :=  self.request.query_params.get("semester", False):
             return JsonResponse({
                 "disciplines": serializers.DisciplineSerializer(
