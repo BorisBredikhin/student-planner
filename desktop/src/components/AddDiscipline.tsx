@@ -31,7 +31,7 @@ export function AddDiscipline() {
                             .value
                     )
             )
-        context.appApi.addDiscipline(data)
+        context.appApi.Discipline.add(data)
     }
 
     if (semestersList === [])

@@ -57,7 +57,7 @@ class DisciplineViewSet(GenericViewSet):
         return JsonResponse({
             "disciplines": serializers.DisciplineSerializer(
                 models\
-                    .Semester\
+                    .Discipline\
                     .objects\
                     .filter(user=self.request.user),
                 many=True).data

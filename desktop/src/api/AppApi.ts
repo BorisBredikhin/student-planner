@@ -151,5 +151,5 @@ export class TaskAPI extends ModelAPI{
 }
 
 export class DisciplineAPI extends ModelAPI{
-    apiPath = apiRoot + "api/discipline/"
+    apiPath = apiRoot + "/api/discipline/"
 }
