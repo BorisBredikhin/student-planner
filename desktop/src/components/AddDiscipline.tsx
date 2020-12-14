@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext";
 import {FloatingWindow} from "./FloatingWindow";
-import {getById} from "../utils";
+import {CancelButton, getById} from "../utils";
 import {Link} from "react-router-dom";
 import {Semester} from "../api/AppApi";
 
@@ -60,7 +60,7 @@ export function AddDiscipline() {
             </form>
             <div>
                 <button style={{marginRight: "5px"}} onClick={save}>Сохранить</button>
-                <Link to="/"><button style={{marginLeft: "5px"}} >Отменить</button></Link>
+                <Link to="/" component={CancelButton}/>
             </div>
         </div>
     </FloatingWindow>

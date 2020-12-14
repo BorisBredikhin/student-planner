@@ -1,8 +1,9 @@
-import React, {useContext} from "react";
+import React, {ForwardedRef, useContext} from "react";
 import {AppContext} from "../appContext";
 import {FloatingWindow} from "./FloatingWindow";
-import {getById} from "../utils";
+import {CancelButton, getById} from "../utils";
 import {Link} from "react-router-dom";
+import {buttonStyle} from "../styles";
 
 
 export function AddSemester() {
@@ -20,6 +21,7 @@ export function AddSemester() {
                     )
             )
         context.appApi.Semester.add(data)
+
     }
 
     return <FloatingWindow>
@@ -41,7 +43,7 @@ export function AddSemester() {
             </form>
             <div>
                 <button style={{marginRight: "5px"}} onClick={save}>Сохранить</button>
-                <Link to="/"><button style={{marginLeft: "5px"}} >Отменить</button></Link>
+                <Link to="/" component={CancelButton}/>
             </div>
         </div>
     </FloatingWindow>
