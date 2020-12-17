@@ -13,7 +13,7 @@ export function MySemestersList() {
             context
                 .appApi
                 .Semester
-                .getAll()
+                .getCurrent()
                 .then(r => setLoaded(r.semesters))
         })
     // }

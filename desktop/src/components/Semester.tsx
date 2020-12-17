@@ -19,8 +19,6 @@ export function Semester(){
                 .then(r => {
                     setLoaded(r)
                 })
-        else if (loaded!.disciplines == [])
-            loaded!.loadDisciplines().then(()=>console.log(loaded))
     })
 
     if (!loadedk) {

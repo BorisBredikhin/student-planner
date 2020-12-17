@@ -12,16 +12,27 @@ class SemesterViewSet(GenericViewSet):
 
     def get(self, request: Request):
         if _id := self.request.query_params.get("id", False):
+            sem = models.Semester.objects.get(pk=int(_id))
             return JsonResponse({
-                "semester": serializers
+                "semester": serializers.SemesterSerializer(sem).data,
+                "disciplines": serializers.DisciplineSerializer(
+                    models.get_disciplines(sem.disciplines),
+                    many=True
+                ).data
+            })
+
+        if self.request.query_params.get("current", False):
+            return JsonResponse({
+                "semesters": serializers
                     .SemesterSerializer(
                         models
                             .Semester
-                            .objects
-                            .get(pk=int(_id))
+                            .current_only(),
+                        many=True
                 )
                 .data
             })
+
         return JsonResponse({
             "semesters": serializers.SemesterSerializer(
                 models

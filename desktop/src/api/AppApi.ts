@@ -32,35 +32,19 @@ export class Semester{
     public name: string
     public start_date: Date
     public end_date: Date
-    public disciplineIds: number[]
     public disciplines: Discipline[] = []
 
-    constructor(s: any) {
+    constructor(s: any, d: any) {
         console.log(s)
         this.id=s.id
         this.name=s.name
         this.start_date = s.start_date
         this.end_date = s.end_date
-        this.disciplineIds = JSON.parse(s.disciplines as string)
-        this.loadDisciplines()
-    }
-
-    public async loadDisciplines() {
-        let r = await fetch(apiRoot+"/api/discipline/?semester="+this.id, {
-            method: "GET",
-            headers: {
-                "Authorization": `Token ${token}`
-            }
-        })
-        this.disciplines = (await r.json()).disciplines
-        console.log(this.disciplines)
-        return true
+        this.disciplines = d
     }
 }
 
 abstract class Api {
-
-
     protected async postFormData(path: string, data: FormData){
         let r = await fetch(path, {
             method: "POST",
@@ -142,7 +126,20 @@ export class SemesterApi extends ModelAPI {
     apiPath = apiRoot + "/api/semester/";
 
     async get(id: string): Promise<Semester> {
-        return new Semester((await super.get(id)).semester);
+        let r = await super.get(id);
+        return new Semester(r.semester, r.disciplines);
+    }
+
+    async getCurrent(){
+        let r = await fetch(this.apiPath + "?current=true", {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${token}`
+            }
+        })
+        let json = await r.json();
+        console.log(json)
+        return json;
     }
 }
 

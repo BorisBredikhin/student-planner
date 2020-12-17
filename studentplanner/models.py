@@ -1,5 +1,6 @@
 from typing import Iterable
 
+import datetime
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -26,6 +27,13 @@ class Semester(models.Model):
     end_date = models.DateField(verbose_name="Дата окончания")
     disciplines = models.TextField(default="[]", verbose_name="Дисциплины")
 
+    def is_current(self):
+        return self.start_date <= datetime.datetime.now() <= self.end_date
+
+    @classmethod
+    def current_only(self):
+        return filter(lambda x: x.is_current, self.objects.all())
+
 
 class Teacher(models.Model):
     user = models.ForeignKey(get_user_model(), models.CASCADE, verbose_name="Пользователь")
@@ -39,6 +47,14 @@ class Discipline(models.Model):
     semester = models.ForeignKey('Semester', models.CASCADE, verbose_name="Семестр")
     teachers = models.TextField(default="[]", verbose_name="Преподаватели")
     tasks = models.TextField(default="[]", verbose_name="Задания")
+
+    @property
+    def is_current(self):
+        return self.semester.start_date <= datetime.datetime.now() <= self.semester.end_date
+
+    @classmethod
+    def currenr_only(self):
+        return filter(lambda x: x.is_current, self.semester.objects.all())
 
 
 class Weight(models.Model):
@@ -63,3 +79,11 @@ class Task(models.Model):
     pass_to = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name="Сдать", blank=True)
     weight = models.ForeignKey(Weight, models.SET_NULL, null=True, verbose_name='Вес', blank=True)
     is_completed = models.BooleanField(default=False, verbose_name="Завершено?")
+
+    @property
+    def is_current(self):
+        return datetime.datetime.now() <= self.due_time
+
+    @classmethod
+    def currenr_only(self):
+        return filter(lambda x: x.is_current, self.objects.all())

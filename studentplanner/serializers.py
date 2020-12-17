@@ -6,7 +6,7 @@ class SemesterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = m.Semester
-        fields = '__all__'
+        fields = ('id', 'name', 'start_date', 'end_date', 'disciplines')
         extra_kwargs = {'user': {'required': False}}
 
 class TeacherSerializer(serializers.ModelSerializer):
@@ -38,5 +38,16 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = m.Task
-        fields = '__all__'
+        fields = (
+            'title',
+            'description',
+            'discipline',
+            'mark_numerator',
+            'mark_denominator',
+            'due_time',
+            'priority',
+            'pass_to',
+            'weight',
+            'is_completed',
+        )
         extra_kwargs = {'user': {'required': False}}
