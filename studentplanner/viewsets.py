@@ -55,7 +55,15 @@ class DisciplineViewSet(GenericViewSet):
 
     def get(self, request: Request):
         if _id := self.request.query_params.get("id", False):
-            return JsonResponse({"discipline":serializers.DisciplineSerializer(models.Discipline.objects.get(pk=_id))})
+            return JsonResponse({
+                "discipline": serializers.DisciplineSerializer(
+                    models.Discipline.objects.get(pk=_id)
+                ).data,
+                "tasks": serializers.TaskSerializer(
+                    models.Task.objects.filter(discipline_id=_id),
+                    many=True
+                ).data
+            })
         if semester :=  self.request.query_params.get("semester", False):
             return JsonResponse({
                 "disciplines": serializers.DisciplineSerializer(
@@ -98,7 +106,7 @@ class TaskViewSet(GenericViewSet):
 
     def get(self, request: Request):
         current_only = request.query_params.get("current_only", False)
-        incompleted_only = request.query_params.get("current_only", False)
+        incompleted_only = request.query_params.get("completed_only", False)
         if current_only and incompleted_only:
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')

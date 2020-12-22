@@ -10,6 +10,7 @@ import {AddSemester} from "./components/AddSemester";
 import {MySemestersList} from "./components/MySemestersList";
 import {AddDiscipline} from "./components/AddDiscipline";
 import {Semester} from "./components/Semester";
+import {Discipline} from "./components/Discipline";
 
 
 function App() {
@@ -34,6 +35,9 @@ function App() {
                 </Route>
                 <Route path="/s/:id">
                     <Semester/>
+                </Route>
+                <Route path="/d/:id">
+                    <Discipline/>
                 </Route>
             </BrowserRouter>
         </div>

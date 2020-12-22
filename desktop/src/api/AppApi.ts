@@ -1,33 +1,46 @@
-import {getCookie} from "../utils";
+import {getCookie} from "../utils"
 
 export interface LoginResponse {
     key: string
 }
 
 const apiRoot: string = "http://127.0.0.1:8000"
-var token: string|null = getCookie("token")
+var token: string | null = getCookie("token")
 
 
 export class Discipline {
-    public id: number;
-    public user: number;
-    public semester: number;
-    public name: string;
-    public teachers: string;
-    public tasks: string;
-
+    public readonly id: number
+    public user: number
+    public semester_id: number
+    public name: string
+    public teachers: string
+    public tasks: string
 
     constructor(data: any) {
-        this.id = data.id;
-        this.user = data.user;
-        this.semester = data.semester;
-        this.name = data.name;
-        this.teachers = data.teachers;
-        this.tasks = data.tasks;
+        var discipline = data.discipline;
+        this.id = discipline.id
+        this.user = discipline.user
+        this.semester_id = discipline.semester
+        this.name = discipline.name
+        this.teachers = discipline.teachers
+        this.tasks = discipline.tasks
+        // todo: add tasks object list
+    }
+
+    private _semester?: Semester = undefined
+
+    get semester(): Semester {
+        return this._semester!
+    }
+
+    set semester(val) {
+        if (!this._semester)
+            this._semester = val
+        else throw new Error("value cannot be overwritten")
     }
 }
 
-export class Semester{
+export class Semester {
     public readonly id: number
     public name: string
     public start_date: Date
@@ -36,8 +49,8 @@ export class Semester{
 
     constructor(s: any, d: any) {
         console.log(s)
-        this.id=s.id
-        this.name=s.name
+        this.id = s.id
+        this.name = s.name
         this.start_date = s.start_date
         this.end_date = s.end_date
         this.disciplines = d
@@ -45,7 +58,7 @@ export class Semester{
 }
 
 abstract class Api {
-    protected async postFormData(path: string, data: FormData){
+    protected async postFormData(path: string, data: FormData) {
         let r = await fetch(path, {
             method: "POST",
             body: data,
@@ -61,38 +74,41 @@ abstract class Api {
 
 abstract class ModelAPI extends Api {
     public abstract apiPath: string
+
     public async add(data: FormData) {
         console.log(data)
         return await this.postFormData(this.apiPath, data)
     }
-    public async get(id: string){
-        let r = await fetch(this.apiPath + "?id="+id, {
+
+    public async get(id: string) {
+        let r = await fetch(this.apiPath + "?id=" + id, {
             method: "GET",
             headers: {
                 "Authorization": `Token ${token}`
             }
         })
-        let json = await r.json();
+        let json = await r.json()
         console.log(json)
-        return json;
+        return json
     }
-    public async getAll(){
+
+    public async getAll() {
         let r = await fetch(this.apiPath, {
             method: "GET",
             headers: {
                 "Authorization": `Token ${token}`
             }
         })
-        let json = await r.json();
+        let json = await r.json()
         console.log(json)
-        return json;
+        return json
     }
 }
 
-export default class AppApi extends Api{
+export default class AppApi extends Api {
     public readonly tasks: TaskAPI
-    public readonly Semester: SemesterApi;
-    public readonly Discipline: DisciplineAPI;
+    public readonly Semester: SemesterApi
+    public readonly Discipline: DisciplineAPI
 
     constructor() {
         super()
@@ -114,7 +130,7 @@ export default class AppApi extends Api{
 
         document.cookie = `token=${json.key}`
 
-        return (token=json.key)
+        return (token = json.key)
     }
 
     public async addDiscipline(data: FormData) {
@@ -123,30 +139,42 @@ export default class AppApi extends Api{
 }
 
 export class SemesterApi extends ModelAPI {
-    apiPath = apiRoot + "/api/semester/";
+    apiPath = apiRoot + "/api/semester/"
 
     async get(id: string): Promise<Semester> {
-        let r = await super.get(id);
-        return new Semester(r.semester, r.disciplines);
+        let r = await super.get(id)
+        return new Semester(r.semester, r.disciplines)
     }
 
-    async getCurrent(){
+    async getCurrent() {
         let r = await fetch(this.apiPath + "?current=true", {
             method: "GET",
             headers: {
                 "Authorization": `Token ${token}`
             }
         })
-        let json = await r.json();
+        let json = await r.json()
         console.log(json)
-        return json;
+        return json
     }
 }
 
-export class TaskAPI extends ModelAPI{
+export class TaskAPI extends ModelAPI {
     apiPath = apiRoot + "/api/task/"
 }
 
-export class DisciplineAPI extends ModelAPI{
+export class DisciplineAPI extends ModelAPI {
     apiPath = apiRoot + "/api/discipline/"
+
+
+    async get(id: string): Promise<any> {
+        let r = await super.get(id)
+        let discipline = new Discipline(r)
+        discipline.semester = await new SemesterApi().get(
+            discipline
+                .semester_id
+                .toString()
+        )
+        return discipline
+    }
 }
