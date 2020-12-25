@@ -7,6 +7,36 @@ export interface LoginResponse {
 const apiRoot: string = "http://127.0.0.1:8000"
 var token: string | null = getCookie("token")
 
+export class Task {
+    public readonly id: number
+    public title: string
+    public description: string
+    public mark_numerator?: number
+    public mark_denominator?: number
+
+
+    get mark(): number {
+        return this.mark_numerator! / this.mark_denominator!
+    }
+
+    public due_date: Date
+    public priority: number
+    public is_completed: boolean
+    public weight_id: number
+
+
+    constructor(json: any) {
+        this.id = json.id
+        this.title = json.title
+        this.description = json.description
+        this.mark_numerator = json.mark_numerator
+        this.mark_denominator = json.mark_denominator
+        this.due_date = json.due_date
+        this.priority = json.priority
+        this.is_completed = json.is_completed
+        this.weight_id = json.weight_id
+    }
+}
 
 export class Discipline {
     public readonly id: number
@@ -106,13 +136,13 @@ abstract class ModelAPI extends Api {
 }
 
 export default class AppApi extends Api {
-    public readonly tasks: TaskAPI
+    public readonly Task: TaskAPI
     public readonly Semester: SemesterApi
     public readonly Discipline: DisciplineAPI
 
     constructor() {
         super()
-        this.tasks = new TaskAPI()
+        this.Task = new TaskAPI()
         this.Semester = new SemesterApi()
         this.Discipline = new DisciplineAPI()
     }
@@ -167,7 +197,7 @@ export class DisciplineAPI extends ModelAPI {
     apiPath = apiRoot + "/api/discipline/"
 
 
-    async get(id: string): Promise<any> {
+    async get(id: string): Promise<Discipline> {
         let r = await super.get(id)
         let discipline = new Discipline(r)
         discipline.semester = await new SemesterApi().get(

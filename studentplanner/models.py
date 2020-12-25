@@ -13,6 +13,10 @@ def get_teachers(text: str) -> Iterable['Teacher']:
     return text_to_objects(text, Teacher.objects)
 
 
+def get_tasks(text: str) -> Iterable['Task']:
+    return text_to_objects(text, Task.objects)
+
+
 def text_to_objects(text, objects):
     if text == '[]':
         return []

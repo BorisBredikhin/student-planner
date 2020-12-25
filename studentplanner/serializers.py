@@ -50,4 +50,10 @@ class TaskSerializer(serializers.ModelSerializer):
             'weight',
             'is_completed',
         )
-        extra_kwargs = {'user': {'required': False}}
+        extra_kwargs = {
+            'user': {'required': False},
+            'mark_numerator': {'required': False},
+            'mark_denominator': {'required': False},
+            'pass_to': {'required': False},
+            'weight': {'required': False},
+        }

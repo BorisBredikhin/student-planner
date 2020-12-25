@@ -104,6 +104,29 @@ class DisciplineViewSet(GenericViewSet):
 class TaskViewSet(GenericViewSet):
     serializer_class = serializers.TaskSerializer
 
+    def post(self, request: Request):
+        rdata = dict(request.data)
+        for i in ["name", "description", "due_time"]:
+            if isinstance(rdata[i], list) and len(rdata[i])==1:
+                rdata[i]=rdata[i][0]
+        for i in ["discipline", "priority"]:
+            if isinstance(rdata[i], list) and len(rdata[i])==1:
+                rdata[i]=int(rdata[i][0])
+        rdata["title"] = rdata["name"]
+        rdata["is_completed"] = rdata.get("is_completed", False)
+
+        data = self.serializer_class(data=rdata)
+        if not data.is_valid(True):
+            return JsonResponse({"status": HTTP_400_BAD_REQUEST})
+
+        obj = data.save(user=self.request.user)
+        dis = models.Discipline.objects.get(pk=rdata["discipline"])
+        tasks = list(models.get_tasks(dis.tasks))
+        tasks.append(obj)
+        dis.tasks = repr(list(map(lambda x: x.pk, tasks)))
+        dis.save()
+        return JsonResponse({'status': HTTP_201_CREATED})
+
     def get(self, request: Request):
         current_only = request.query_params.get("current_only", False)
         incompleted_only = request.query_params.get("completed_only", False)
