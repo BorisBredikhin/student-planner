@@ -10,6 +10,9 @@ import {AddSemester} from "./components/AddSemester";
 import {MySemestersList} from "./components/MySemestersList";
 import {AddDiscipline} from "./components/AddDiscipline";
 import {Semester} from "./components/Semester";
+import {Discipline} from "./components/Discipline";
+import {AddTask} from "./components/AddTask"
+import {TaskView} from "./components/TaskView"
 
 
 function App() {
@@ -23,6 +26,8 @@ function App() {
                 <Link to = "/addsem">Добавить семестр</Link>
                     {" "}
                     <Link to = "/adddis">Добавить дисциплину</Link>
+                    {" "}
+                    <Link to = "/addtask">Добавить задание</Link>
                     <Route path="/" exact>
                     <MySemestersList/>
                 </Route>
@@ -32,8 +37,17 @@ function App() {
                 <Route path="/adddis">
                     <AddDiscipline/>
                 </Route>
+                <Route path="/addtask">
+                    <AddTask/>
+                </Route>
                 <Route path="/s/:id">
                     <Semester/>
+                </Route>
+                <Route path="/d/:id">
+                    <Discipline/>
+                </Route>
+                <Route path="/t/:id">
+                    <TaskView/>
                 </Route>
             </BrowserRouter>
         </div>

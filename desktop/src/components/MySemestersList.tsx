@@ -12,14 +12,21 @@ export function MySemestersList() {
             if (!loaded)
             context
                 .appApi
-                .getSemesters()
-                .then(setLoaded)
+                .Semester
+                .getCurrent()
+                .then(r => setLoaded(r.semesters))
         })
     // }
     console.log(loaded)
     return <div style={{margin: "0 auto"}}>
         <h2>Мои семестры</h2>
         {loaded
-            ?.map((s, idx)=><Link key={idx} to={`/s/${idx}`} style={linkSytle}>{s.name}</Link>)}
+            ?.map((s)=>
+                <Link
+                    key={s.id}
+                    to={`/s/${s.id}`}
+                    style={linkSytle}
+                >{s.name}</Link
+                >)}
     </div>
 }

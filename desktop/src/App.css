@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.tasklist{
+  list-style: none;
+  text-align: center;
+}
+
+.tasklist li{
+  display: inline-block;
+  width: 300px;
+  height: fit-content;
+}

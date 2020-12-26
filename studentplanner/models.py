@@ -1,5 +1,6 @@
 from typing import Iterable
 
+import datetime
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -10,6 +11,10 @@ def get_disciplines(text: str) -> Iterable['Discipline']:
 
 def get_teachers(text: str) -> Iterable['Teacher']:
     return text_to_objects(text, Teacher.objects)
+
+
+def get_tasks(text: str) -> Iterable['Task']:
+    return text_to_objects(text, Task.objects)
 
 
 def text_to_objects(text, objects):
@@ -26,6 +31,13 @@ class Semester(models.Model):
     end_date = models.DateField(verbose_name="Дата окончания")
     disciplines = models.TextField(default="[]", verbose_name="Дисциплины")
 
+    def is_current(self):
+        return self.start_date <= datetime.datetime.now() <= self.end_date
+
+    @classmethod
+    def current_only(self):
+        return filter(lambda x: x.is_current, self.objects.all())
+
 
 class Teacher(models.Model):
     user = models.ForeignKey(get_user_model(), models.CASCADE, verbose_name="Пользователь")
@@ -39,6 +51,14 @@ class Discipline(models.Model):
     semester = models.ForeignKey('Semester', models.CASCADE, verbose_name="Семестр")
     teachers = models.TextField(default="[]", verbose_name="Преподаватели")
     tasks = models.TextField(default="[]", verbose_name="Задания")
+
+    @property
+    def is_current(self):
+        return self.semester.start_date <= datetime.datetime.now() <= self.semester.end_date
+
+    @classmethod
+    def currenr_only(self):
+        return filter(lambda x: x.is_current, self.semester.objects.all())
 
 
 class Weight(models.Model):
@@ -56,10 +76,18 @@ class Task(models.Model):
     title = models.CharField(max_length=500, verbose_name="Заголовок")
     description = models.TextField(verbose_name="Описание")
     discipline = models.ForeignKey('Discipline', on_delete=models.CASCADE, verbose_name='Дисциплина')
-    mark_numerator = models.IntegerField(null=True)
-    mark_denominator = models.IntegerField(null=True)
+    mark_numerator = models.IntegerField(null=True, blank=True)
+    mark_denominator = models.IntegerField(null=True, blank=True)
     due_time = models.DateField(verbose_name="Сдать до")
     priority = models.IntegerField(verbose_name="Приоритет")
-    pass_to = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name="Сдать")
-    weight = models.ForeignKey(Weight, models.SET_NULL, null=True, verbose_name='Вес')
+    pass_to = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, verbose_name="Сдать", blank=True)
+    weight = models.ForeignKey(Weight, models.SET_NULL, null=True, verbose_name='Вес', blank=True)
     is_completed = models.BooleanField(default=False, verbose_name="Завершено?")
+
+    @property
+    def is_current(self):
+        return datetime.datetime.now() <= self.due_time
+
+    @classmethod
+    def currenr_only(self):
+        return filter(lambda x: x.is_current, self.objects.all())

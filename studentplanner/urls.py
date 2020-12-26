@@ -5,5 +5,6 @@ from studentplanner import viewsets
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
     path('semester/', viewsets.SemesterViewSet.as_view({'get':'get'})),
-    path('discipline/', viewsets.DisciplineViewSet.as_view({'get':'get'})),
+    path('discipline/', viewsets.DisciplineViewSet.as_view({'get':'get', 'post': 'post'})),
+    path('task/', viewsets.TaskViewSet.as_view({'get':'get', 'post': 'post'})),
 ]

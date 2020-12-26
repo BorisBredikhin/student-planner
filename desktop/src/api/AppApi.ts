@@ -1,52 +1,151 @@
-import {getCookie} from "../utils";
+import {getCookie} from "../utils"
 
 export interface LoginResponse {
     key: string
 }
 
+const apiRoot: string = "http://127.0.0.1:8000"
+var token: string | null = getCookie("token")
+
+export class Task {
+    public readonly id: number
+    public title: string
+    public description: string
+    public mark_numerator?: number
+    public mark_denominator?: number
+    public due_time: Date
+    public priority: number
+    public is_completed: boolean
+    public weight_id: number
+
+    constructor(json: any) {
+        this.id = json.id
+        this.title = json.title
+        this.description = json.description
+        this.mark_numerator = json.mark_numerator
+        this.mark_denominator = json.mark_denominator
+        this.due_time = json.due_time
+        this.priority = json.priority
+        this.is_completed = json.is_completed
+        this.weight_id = json.weight_id
+    }
+
+    get mark(): number | string {
+        return this.is_completed && this.denGe0()
+            ? this.mark_numerator! / this.mark_denominator! : "N/A"
+    }
+
+    private denGe0 = () => this.mark_denominator == undefined
+        ? false : this.mark_denominator! > 0
+}
+
+export class Discipline {
+    public readonly id: number
+    public user: number
+    public semester_id: number
+    public name: string
+    public teachers: string
+    public tasks: string
+    public tasksObj: Task[]
+
+    constructor(discipline: any, t: any) {
+        this.id = discipline.id
+        this.user = discipline.user
+        this.semester_id = discipline.semester
+        this.name = discipline.name
+        this.teachers = discipline.teachers
+        this.tasks = discipline.tasks
+        this.tasksObj = t
+    }
+
+    private _semester?: Semester = undefined
+
+    get semester(): Semester {
+        return this._semester!
+    }
+
+    set semester(val) {
+        if (!this._semester)
+            this._semester = val
+        else throw new Error("value cannot be overwritten")
+    }
+}
+
 export class Semester {
     public readonly id: number
     public name: string
-    public startDate: Date
-    public endDate: Date
-    public DisciplineIds: number[]
+    public start_date: Date
+    public end_date: Date
+    public disciplines: Discipline[] = []
 
-    constructor(s: any) {
+    constructor(s: any, d: any) {
         console.log(s)
-        this.id=s.id
-        this.name=s.name
-        this.startDate = s.start_date
-        this.endDate = s.end_date
-        this.DisciplineIds = (s.disciplines as string)
-            .slice(
-                1,
-                (s.disciplines as string).length
-            )
-            .split(', ')
-            .map(parseInt)
+        this.id = s.id
+        this.name = s.name
+        this.start_date = s.start_date
+        this.end_date = s.end_date
+        this.disciplines = d
     }
-
 }
 
-export default class AppApi {
-    public readonly apiRoot: string
-    private token: string|null = getCookie("token")
-
-    constructor(apiRoot: string) {
-        this.apiRoot = apiRoot
-    }
-
-    private async postFormData(path: string, data: FormData){
-        let r = await fetch(this.apiRoot + path, {
+abstract class Api {
+    protected async postFormData(path: string, data: FormData) {
+        let r = await fetch(path, {
             method: "POST",
             body: data,
             headers: {
-                "Authorization": `Token ${this.token}`
+                "Authorization": `Token ${token}`
             }
         })
         console.log(r)
         let json = await r.json()
         return json
+    }
+}
+
+abstract class ModelAPI extends Api {
+    public abstract apiPath: string
+
+    public async add(data: FormData) {
+        console.log(data)
+        return await this.postFormData(this.apiPath, data)
+    }
+
+    public async get(id: string) {
+        let r = await fetch(this.apiPath + "?id=" + id, {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${token}`
+            }
+        })
+        let json = await r.json()
+        console.log(json)
+        return json
+    }
+
+    public async getAll() {
+        let r = await fetch(this.apiPath, {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${token}`
+            }
+        })
+        let json = await r.json()
+        console.log(json)
+        return json
+    }
+}
+
+export default class AppApi extends Api {
+    public readonly Task: TaskAPI
+    public readonly Semester: SemesterApi
+    public readonly Discipline: DisciplineAPI
+
+    constructor() {
+        super()
+        this.Task = new TaskAPI()
+        this.Semester = new SemesterApi()
+        this.Discipline = new DisciplineAPI()
     }
 
     public async login(username: string, password: string) {
@@ -54,7 +153,7 @@ export default class AppApi {
         formData.append("username", username)
         formData.append("password", password)
 
-        let r = await fetch(this.apiRoot + "/rest-auth/login/", {
+        let r = await fetch(apiRoot + "/rest-auth/login/", {
             method: "POST",
             body: formData
         })
@@ -62,40 +161,51 @@ export default class AppApi {
 
         document.cookie = `token=${json.key}`
 
-        return (this.token=json.key)
-    }
-
-    public async addSemester(data: FormData) {
-        console.log(data)
-        return await this.postFormData("/api/semester/", data)
-    }
-
-    public async getSemesters(){
-        let r = await fetch(this.apiRoot + "/api/semester/", {
-            method: "GET",
-            headers: {
-                "Authorization": `Token ${this.token}`
-            }
-        })
-        let json = await r.json();
-        console.log(json)
-        return (json).semesters.map((s: any)=>new Semester(s));
-    }
-
-    public async getSemester(id: string){
-        let r = await fetch(this.apiRoot + "/api/semester/?id="+id, {
-            method: "GET",
-
-            headers: {
-                "Authorization": `Token ${this.token}`
-            }
-        })
-        let json = await r.json();
-        console.log(json)
-        return new Semester(json.semester);
+        return (token = json.key)
     }
 
     public async addDiscipline(data: FormData) {
         return await this.postFormData("/api/discipline/", data)
+    }
+}
+
+export class SemesterApi extends ModelAPI {
+    apiPath = apiRoot + "/api/semester/"
+
+    async get(id: string): Promise<Semester> {
+        let r = await super.get(id)
+        return new Semester(r.semester, r.disciplines)
+    }
+
+    async getCurrent() {
+        let r = await fetch(this.apiPath + "?current=true", {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${token}`
+            }
+        })
+        let json = await r.json()
+        console.log(json)
+        return json
+    }
+}
+
+export class TaskAPI extends ModelAPI {
+    apiPath = apiRoot + "/api/task/"
+}
+
+export class DisciplineAPI extends ModelAPI {
+    apiPath = apiRoot + "/api/discipline/"
+
+
+    async get(id: string): Promise<Discipline> {
+        let r = await super.get(id)
+        let discipline = new Discipline(r.discipline, r.tasks)
+        discipline.semester = await new SemesterApi().get(
+            discipline
+                .semester_id
+                .toString()
+        )
+        return discipline
     }
 }

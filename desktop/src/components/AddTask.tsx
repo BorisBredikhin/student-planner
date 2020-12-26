@@ -3,26 +3,26 @@ import {AppContext} from "../appContext";
 import {FloatingWindow} from "./FloatingWindow";
 import {CancelButton, getById} from "../utils";
 import {Link} from "react-router-dom";
-import {Semester} from "../api/AppApi";
+import {Discipline, Task} from "../api/AppApi"
 
 
-export function AddDiscipline() {
+export function AddTask() {
     const context = useContext(AppContext)
-    var [semestersList, setSemestersList] = useState<Semester[] | null>(null);
+    var [disciplineList, setDisciplineList] = useState<Discipline[] | null>(null);
 
     useEffect(()=>{
-        if (!semestersList){
+        if (!disciplineList){
             context
                 .appApi
-                .Semester
+                .Discipline
                 .getAll()
-                .then(r => setSemestersList(r.semesters))
+                .then(r => setDisciplineList(r.disciplines))
         }
     })
 
     function save() {
         let data = new FormData();
-        ["name", "semester"]
+        ["name", "discipline", "description", "due_time", "priority"]
             .forEach(
                 value => data
                     .append(
@@ -31,30 +31,45 @@ export function AddDiscipline() {
                             .value
                     )
             )
-        context.appApi.Discipline.add(data)
+        context
+            .appApi
+            .Task
+            .add(data)
     }
 
-    if (semestersList === [])
+    if (disciplineList === [])
         return <p>Загрузка</p>
 
-    console.log(semestersList)
+    console.log(disciplineList)
 
     return <FloatingWindow>
         <div>
             <form id="addDiscipline" className="AddDiscipline">
-                <h3>Добавить Дисциплину</h3>
+                <h3>Добавить задание</h3>
                 <div>
                     <div><label htmlFor="name">Название</label></div>
                     <div><input type="text" id="name" required={true}/></div>
                 </div>
                 <div>
-                    <div><label htmlFor="semester">Семестер</label></div>
+                    <div><label htmlFor="discipline">Дисциплина</label></div>
                     <div>
-                        <select name="semester" id='semester'>
-                            {semestersList?.map(s=><option value={s.id} key={s.id}>
+                        <select name="discipline" id='discipline'>
+                            {disciplineList?.map(s=><option value={s.id} key={s.id}>
                                 {s.name}
                             </option>)}
                         </select>
+                    </div>
+                    <div>
+                        <div><label htmlFor="description">Описание</label></div>
+                        <div><textarea id="description"/></div>
+                    </div>
+                    <div>
+                        <div><label htmlFor="due_time">Сдать до</label></div>
+                        <div><input type="date" id="due_time"/></div>
+                    </div>
+                    <div>
+                        <div><label htmlFor="priority">Приоритет</label></div>
+                        <div><input type="number" id="priority"/></div>
                     </div>
                 </div>
             </form>
