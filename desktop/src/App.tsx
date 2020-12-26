@@ -12,6 +12,7 @@ import {AddDiscipline} from "./components/AddDiscipline";
 import {Semester} from "./components/Semester";
 import {Discipline} from "./components/Discipline";
 import {AddTask} from "./components/AddTask"
+import {TaskView} from "./components/TaskView"
 
 
 function App() {
@@ -44,6 +45,9 @@ function App() {
                 </Route>
                 <Route path="/d/:id">
                     <Discipline/>
+                </Route>
+                <Route path="/t/:id">
+                    <TaskView/>
                 </Route>
             </BrowserRouter>
         </div>

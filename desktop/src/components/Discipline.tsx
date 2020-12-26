@@ -31,6 +31,12 @@ export function Discipline(){
             <Link to={"/s/"+loaded!.semester_id}>К семестру</Link>
         </div>
         <h2>{loaded!.name}</h2>
-        {loaded!.tasks/*todo*/}
+        <ul className="tasklist">
+            {loaded!.tasksObj.map(task => <li key={task.id}>
+                <strong>{task.title}</strong>
+                {task.is_completed?<p>Сдано на {task.mark}</p>:<p>Сдать до {task.due_time}</p>}
+                <Link to={`/t/${task.id}`}>Подробнее</Link>
+            </li>)}
+        </ul>
     </div>
 }

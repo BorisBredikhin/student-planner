@@ -13,17 +13,10 @@ export class Task {
     public description: string
     public mark_numerator?: number
     public mark_denominator?: number
-
-
-    get mark(): number {
-        return this.mark_numerator! / this.mark_denominator!
-    }
-
-    public due_date: Date
+    public due_time: Date
     public priority: number
     public is_completed: boolean
     public weight_id: number
-
 
     constructor(json: any) {
         this.id = json.id
@@ -31,11 +24,19 @@ export class Task {
         this.description = json.description
         this.mark_numerator = json.mark_numerator
         this.mark_denominator = json.mark_denominator
-        this.due_date = json.due_date
+        this.due_time = json.due_time
         this.priority = json.priority
         this.is_completed = json.is_completed
         this.weight_id = json.weight_id
     }
+
+    get mark(): number | string {
+        return this.is_completed && this.denGe0()
+            ? this.mark_numerator! / this.mark_denominator! : "N/A"
+    }
+
+    private denGe0 = () => this.mark_denominator == undefined
+        ? false : this.mark_denominator! > 0
 }
 
 export class Discipline {
@@ -45,16 +46,16 @@ export class Discipline {
     public name: string
     public teachers: string
     public tasks: string
+    public tasksObj: Task[]
 
-    constructor(data: any) {
-        var discipline = data.discipline;
+    constructor(discipline: any, t: any) {
         this.id = discipline.id
         this.user = discipline.user
         this.semester_id = discipline.semester
         this.name = discipline.name
         this.teachers = discipline.teachers
         this.tasks = discipline.tasks
-        // todo: add tasks object list
+        this.tasksObj = t
     }
 
     private _semester?: Semester = undefined
@@ -199,7 +200,7 @@ export class DisciplineAPI extends ModelAPI {
 
     async get(id: string): Promise<Discipline> {
         let r = await super.get(id)
-        let discipline = new Discipline(r)
+        let discipline = new Discipline(r.discipline, r.tasks)
         discipline.semester = await new SemesterApi().get(
             discipline
                 .semester_id
