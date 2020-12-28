@@ -128,6 +128,17 @@ class TaskViewSet(GenericViewSet):
         return JsonResponse({'status': HTTP_201_CREATED})
 
     def get(self, request: Request):
+        if _id := request.query_params.get("id", False):
+            return JsonResponse({
+                "task": serializers
+                    .TaskSerializer(
+                    models\
+                        .Task\
+                        .objects\
+                        .get(pk=_id)
+                ).data
+            })
+
         current_only = request.query_params.get("current_only", False)
         incompleted_only = request.query_params.get("completed_only", False)
         if current_only and incompleted_only:

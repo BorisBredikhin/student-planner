@@ -8,7 +8,7 @@ const apiRoot: string = "http://127.0.0.1:8000"
 var token: string | null = getCookie("token")
 
 export class Task {
-    public readonly id: number
+    public readonly pk: number
     public title: string
     public description: string
     public mark_numerator?: number
@@ -19,7 +19,7 @@ export class Task {
     public weight_id: number
 
     constructor(json: any) {
-        this.id = json.id
+        this.pk = json.id ?? json.pk
         this.title = json.title
         this.description = json.description
         this.mark_numerator = json.mark_numerator
@@ -192,6 +192,22 @@ export class SemesterApi extends ModelAPI {
 
 export class TaskAPI extends ModelAPI {
     apiPath = apiRoot + "/api/task/"
+
+    async get(id: string): Promise<any> {
+        return (await super.get(id)).task
+    }
+
+    async getCurrent() {
+        let r = await fetch(this.apiPath + "?current=true", {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${token}`
+            }
+        })
+        let json = await r.json()
+        console.log(json)
+        return json
+    }
 }
 
 export class DisciplineAPI extends ModelAPI {
