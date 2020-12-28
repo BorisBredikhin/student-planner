@@ -145,8 +145,7 @@ class TaskViewSet(GenericViewSet):
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')
         elif current_only:
-            queryset = models.Task.objects.raw(
-                f'select * from studentplanner_task where user_id={request.user.pk} and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')
+            queryset = models.Task.currenr_only()
         elif incompleted_only:
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed')

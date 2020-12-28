@@ -86,7 +86,7 @@ class Task(models.Model):
 
     @property
     def is_current(self):
-        return datetime.datetime.now() <= self.due_time
+        return datetime.datetime.now().date() <= self.due_time
 
     @classmethod
     def currenr_only(self):

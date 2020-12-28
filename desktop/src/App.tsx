@@ -13,6 +13,7 @@ import {Semester} from "./components/Semester"
 import {Discipline} from "./components/Discipline"
 import {AddTask} from "./components/AddTask"
 import {TaskView} from "./components/TaskView"
+import {CurrentTaskList} from "./components/CurrentTaskList"
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                 {" "}
                 <Link to="/addtask">Добавить задание</Link>
                 <Route path="/" exact>
+                    <CurrentTaskList/>
                     <MySemestersList/>
                 </Route>
                 <Route path="/addsem">

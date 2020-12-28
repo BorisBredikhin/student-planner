@@ -198,7 +198,7 @@ export class TaskAPI extends ModelAPI {
     }
 
     async getCurrent() {
-        let r = await fetch(this.apiPath + "?current=true", {
+        let r = await fetch(this.apiPath + "?current_only=true", {
             method: "GET",
             headers: {
                 "Authorization": `Token ${token}`
