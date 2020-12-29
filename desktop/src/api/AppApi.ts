@@ -8,7 +8,7 @@ const apiRoot: string = "http://127.0.0.1:8000"
 var token: string | null = getCookie("token")
 
 export class Task {
-    public readonly id: number
+    public readonly pk: number
     public title: string
     public description: string
     public mark_numerator?: number
@@ -19,7 +19,7 @@ export class Task {
     public weight_id: number
 
     constructor(json: any) {
-        this.id = json.id
+        this.pk = json.id ?? json.pk
         this.title = json.title
         this.description = json.description
         this.mark_numerator = json.mark_numerator
@@ -31,6 +31,7 @@ export class Task {
     }
 
     get mark(): number | string {
+        console.log(this)
         return this.is_completed && this.denGe0()
             ? this.mark_numerator! / this.mark_denominator! : "N/A"
     }
@@ -192,6 +193,34 @@ export class SemesterApi extends ModelAPI {
 
 export class TaskAPI extends ModelAPI {
     apiPath = apiRoot + "/api/task/"
+
+    async get(id: string): Promise<Task> {
+        return new Task((await super.get(id)).task)
+    }
+
+    async getCurrent() {
+        let r = await fetch(this.apiPath + "?current_only=true", {
+            method: "GET",
+            headers: {
+                "Authorization": `Token ${token}`
+            }
+        })
+        let json = await r.json()
+        console.log(json)
+        return json
+    }
+
+    async saveMark(pk: number, numerator: string, denominator: string) {
+        let formData = new FormData()
+        formData.append("pk", pk.toString())
+        formData.append("numerator", numerator)
+        formData.append("denominator", denominator)
+
+        let r = await fetch(this.apiPath, {
+            method: "POST",
+            body: formData
+        })
+    }
 }
 
 export class DisciplineAPI extends ModelAPI {

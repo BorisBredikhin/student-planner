@@ -106,19 +106,22 @@ class TaskViewSet(GenericViewSet):
 
     def post(self, request: Request):
         rdata = dict(request.data)
+        if "numerator" in rdata.keys():
+            return self.save_mark(rdata)
+        return self.add_new_task(rdata)
+
+    def add_new_task(self, rdata):
         for i in ["name", "description", "due_time"]:
-            if isinstance(rdata[i], list) and len(rdata[i])==1:
-                rdata[i]=rdata[i][0]
+            if isinstance(rdata[i], list) and len(rdata[i]) == 1:
+                rdata[i] = rdata[i][0]
         for i in ["discipline", "priority"]:
-            if isinstance(rdata[i], list) and len(rdata[i])==1:
-                rdata[i]=int(rdata[i][0])
+            if isinstance(rdata[i], list) and len(rdata[i]) == 1:
+                rdata[i] = int(rdata[i][0])
         rdata["title"] = rdata["name"]
         rdata["is_completed"] = rdata.get("is_completed", False)
-
         data = self.serializer_class(data=rdata)
         if not data.is_valid(True):
             return JsonResponse({"status": HTTP_400_BAD_REQUEST})
-
         obj = data.save(user=self.request.user)
         dis = models.Discipline.objects.get(pk=rdata["discipline"])
         tasks = list(models.get_tasks(dis.tasks))
@@ -128,14 +131,24 @@ class TaskViewSet(GenericViewSet):
         return JsonResponse({'status': HTTP_201_CREATED})
 
     def get(self, request: Request):
+        if _id := request.query_params.get("id", False):
+            return JsonResponse({
+                "task": serializers
+                    .TaskSerializer(
+                    models\
+                        .Task\
+                        .objects\
+                        .get(pk=_id)
+                ).data
+            })
+
         current_only = request.query_params.get("current_only", False)
         incompleted_only = request.query_params.get("completed_only", False)
         if current_only and incompleted_only:
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')
         elif current_only:
-            queryset = models.Task.objects.raw(
-                f'select * from studentplanner_task where user_id={request.user.pk} and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')
+            queryset = models.Task.currenr_only()
         elif incompleted_only:
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed')
@@ -145,3 +158,13 @@ class TaskViewSet(GenericViewSet):
                 "tasks": serializers.TaskSerializer(
                     queryset,
                     many=True).data})
+
+    def save_mark(self, rdata):
+        for i in rdata:
+            rdata[i] = int(rdata[i][0])
+        obj = models.Task.objects.get(pk=rdata['pk'])
+        obj.mark_numerator = rdata['numerator']
+        obj.mark_denominator = rdata['denominator']
+        obj.is_completed = True
+        obj.save()
+        return JsonResponse({'status': 'mark have saved'}, status=HTTP_201_CREATED)

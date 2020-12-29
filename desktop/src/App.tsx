@@ -1,34 +1,36 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState} from 'react'
 
-import './App.css';
-import {BrowserRouter, Link, Route} from "react-router-dom";
-import {AppContext} from "./appContext";
-import {LoginForm} from "./components/LoginForm";
-import {AppHeader} from "./components/AppHeader";
-import {getCookie} from "./utils";
-import {AddSemester} from "./components/AddSemester";
-import {MySemestersList} from "./components/MySemestersList";
-import {AddDiscipline} from "./components/AddDiscipline";
-import {Semester} from "./components/Semester";
-import {Discipline} from "./components/Discipline";
+import './App.css'
+import {BrowserRouter, Link, Route} from "react-router-dom"
+import {AppContext} from "./appContext"
+import {LoginForm} from "./components/LoginForm"
+import {AppHeader} from "./components/AppHeader"
+import {getCookie} from "./utils"
+import {AddSemester} from "./components/AddSemester"
+import {MySemestersList} from "./components/MySemestersList"
+import {AddDiscipline} from "./components/AddDiscipline"
+import {Semester} from "./components/Semester"
+import {Discipline} from "./components/Discipline"
 import {AddTask} from "./components/AddTask"
 import {TaskView} from "./components/TaskView"
+import {CurrentTaskList} from "./components/CurrentTaskList"
 
 
 function App() {
     // noinspection JSUnusedLocalSymbols
     const context = useContext(AppContext)
     let [token, setToken] = useState(getCookie("token"))
-    return token?(
+    return token ? (
         <div className="App">
             <AppHeader/>
             <BrowserRouter>
-                <Link to = "/addsem">Добавить семестр</Link>
-                    {" "}
-                    <Link to = "/adddis">Добавить дисциплину</Link>
-                    {" "}
-                    <Link to = "/addtask">Добавить задание</Link>
-                    <Route path="/" exact>
+                <Link to="/addsem">Добавить семестр</Link>
+                {" "}
+                <Link to="/adddis">Добавить дисциплину</Link>
+                {" "}
+                <Link to="/addtask">Добавить задание</Link>
+                <Route path="/" exact>
+                    <CurrentTaskList/>
                     <MySemestersList/>
                 </Route>
                 <Route path="/addsem">
@@ -51,7 +53,7 @@ function App() {
                 </Route>
             </BrowserRouter>
         </div>
-    ):<LoginForm setToken={setToken}/>;
+    ) : <LoginForm setToken={setToken}/>
 }
 
-export default App;
+export default App

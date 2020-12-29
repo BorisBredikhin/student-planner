@@ -7,7 +7,6 @@ export function Discipline(){
     const context = useContext(AppContext)
     let {id} = useParams<{id: string}>()
     let [loaded, setLoaded] = useState<Dis | null>(null)
-    let [loadedk, setLoadedk] = useState(false)
 
     useEffect(()=>{
         if (!loaded)
@@ -32,10 +31,10 @@ export function Discipline(){
         </div>
         <h2>{loaded!.name}</h2>
         <ul className="tasklist">
-            {loaded!.tasksObj.map(task => <li key={task.id}>
+            {loaded!.tasksObj.map(task => <li key={task.pk}>
                 <strong>{task.title}</strong>
                 {task.is_completed?<p>Сдано на {task.mark}</p>:<p>Сдать до {task.due_time}</p>}
-                <Link to={`/t/${task.id}`}>Подробнее</Link>
+                <Link to={`/t/${task.pk}`}>Подробнее</Link>
             </li>)}
         </ul>
     </div>
