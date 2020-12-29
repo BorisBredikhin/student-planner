@@ -31,6 +31,7 @@ export class Task {
     }
 
     get mark(): number | string {
+        console.log(this)
         return this.is_completed && this.denGe0()
             ? this.mark_numerator! / this.mark_denominator! : "N/A"
     }
@@ -193,8 +194,8 @@ export class SemesterApi extends ModelAPI {
 export class TaskAPI extends ModelAPI {
     apiPath = apiRoot + "/api/task/"
 
-    async get(id: string): Promise<any> {
-        return (await super.get(id)).task
+    async get(id: string): Promise<Task> {
+        return new Task((await super.get(id)).task)
     }
 
     async getCurrent() {
