@@ -106,19 +106,22 @@ class TaskViewSet(GenericViewSet):
 
     def post(self, request: Request):
         rdata = dict(request.data)
+        if "numerator" in rdata.keys():
+            return self.save_mark(rdata)
+        return self.add_new_task(rdata)
+
+    def add_new_task(self, rdata):
         for i in ["name", "description", "due_time"]:
-            if isinstance(rdata[i], list) and len(rdata[i])==1:
-                rdata[i]=rdata[i][0]
+            if isinstance(rdata[i], list) and len(rdata[i]) == 1:
+                rdata[i] = rdata[i][0]
         for i in ["discipline", "priority"]:
-            if isinstance(rdata[i], list) and len(rdata[i])==1:
-                rdata[i]=int(rdata[i][0])
+            if isinstance(rdata[i], list) and len(rdata[i]) == 1:
+                rdata[i] = int(rdata[i][0])
         rdata["title"] = rdata["name"]
         rdata["is_completed"] = rdata.get("is_completed", False)
-
         data = self.serializer_class(data=rdata)
         if not data.is_valid(True):
             return JsonResponse({"status": HTTP_400_BAD_REQUEST})
-
         obj = data.save(user=self.request.user)
         dis = models.Discipline.objects.get(pk=rdata["discipline"])
         tasks = list(models.get_tasks(dis.tasks))
@@ -155,3 +158,13 @@ class TaskViewSet(GenericViewSet):
                 "tasks": serializers.TaskSerializer(
                     queryset,
                     many=True).data})
+
+    def save_mark(self, rdata):
+        for i in rdata:
+            rdata[i] = int(rdata[i][0])
+        obj = models.Task.objects.get(pk=rdata['pk'])
+        obj.mark_numerator = rdata['numerator']
+        obj.mark_denominator = rdata['denominator']
+        obj.is_completed = True
+        obj.save()
+        return JsonResponse({'status': 'mark have saved'}, status=HTTP_201_CREATED)

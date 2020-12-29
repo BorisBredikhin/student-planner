@@ -208,6 +208,18 @@ export class TaskAPI extends ModelAPI {
         console.log(json)
         return json
     }
+
+    async saveMark(pk: number, numerator: string, denominator: string) {
+        let formData = new FormData()
+        formData.append("pk", pk.toString())
+        formData.append("numerator", numerator)
+        formData.append("denominator", denominator)
+
+        let r = await fetch(this.apiPath, {
+            method: "POST",
+            body: formData
+        })
+    }
 }
 
 export class DisciplineAPI extends ModelAPI {

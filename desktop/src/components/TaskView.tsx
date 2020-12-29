@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from "react"
 import {AppContext} from "../appContext"
 import {useParams} from "react-router-dom"
 import {Task} from "../api/AppApi"
+import {getById} from "../utils"
 
 
 
@@ -23,7 +24,16 @@ export function TaskView(){
 
     if (!loaded)
         return <p>Загрузка</p>
-    
+
+    function save() {
+        let numerator = getById<HTMLInputElement>("numerator").value
+        let denominator = getById<HTMLInputElement>("denominator").value
+        context
+            .appApi
+            .Task
+            .saveMark(loaded!.pk, numerator, denominator)
+    }
+
     return <div>
         <h1>Задача {loaded.title}</h1>
         <div style={{
@@ -34,9 +44,14 @@ export function TaskView(){
         {loaded.is_completed?
             <p>Оценка: {loaded.mark}</p>:
             <div>
-                <p>Сдать до {loaded.due_time}</p>
-                <p>Приоритет: {loaded.priority}</p>
+                <div>
+                    <p>Сдать до {loaded.due_time}</p>
+                    <p>Приоритет: {loaded.priority}</p>
                 </div>
+                <div>
+                    Оценка <input type="number" id="numerator"/> / <input type="number" id="denominator"/> <button onClick={save}>Сохранить</button>
+                </div>
+            </div>
         }
         </div>
     </div>
