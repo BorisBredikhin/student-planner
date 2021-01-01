@@ -18,6 +18,82 @@ paths:
           description: ''
       tags:
       - api
+  /api/discipline/:
+    get:
+      operationId: retrieveDiscipline
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discipline'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createDiscipline
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discipline'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Discipline'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Discipline'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discipline'
+          description: ''
+      tags:
+      - api
+  /api/task/:
+    get:
+      operationId: retrieveTask
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createTask
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Task'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+      tags:
+      - api
   /rest-auth/logout/:
     get:
       operationId: listLogouts
@@ -223,14 +299,70 @@ components:
         end_date:
           type: string
           format: date
-        disiplines:
+        disciplines:
           type: string
-        user:
-          type: integer
       required:
       - name
       - start_date
       - end_date
+    Discipline:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        teachers:
+          type: string
+        tasks:
+          type: string
+        user:
+          type: integer
+        semester:
+          type: integer
+      required:
+      - name
+      - semester
+    Task:
+      type: object
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+        discipline:
+          type: integer
+        mark_numerator:
+          type: integer
+          nullable: true
+        mark_denominator:
+          type: integer
+          nullable: true
+        due_time:
+          type: string
+          format: date
+        priority:
+          type: integer
+        pass_to:
+          type: integer
+          nullable: true
+        weight:
+          type: integer
+          nullable: true
+        is_completed:
+          type: boolean
+      required:
+      - title
+      - description
+      - discipline
+      - due_time
+      - priority
     PasswordReset:
       type: object
       properties:

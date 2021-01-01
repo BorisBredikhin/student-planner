@@ -2,6 +2,7 @@ import React, {useContext} from "react";
 import colors from "../colors";
 import './LoginForm.css'
 import {AppContext} from "../appContext";
+import { Link } from "react-router-dom";
 
 export function LoginForm(props: {setToken: (_:string) => void}){
     let context = useContext(AppContext)
@@ -29,12 +30,15 @@ export function LoginForm(props: {setToken: (_:string) => void}){
             <span>Пароль</span>
             <input id="password" type="password"/>
         </div>
-        <button
-            onClick={login}
-            style={{
-                background: colors.secondary,
-                color: colors.textOnMain
-            }}
-        >Войти</button>
+        <div>
+            <button
+                onClick={login}
+                style={{
+                    background: colors.secondary,
+                    color: colors.textOnMain
+                }}
+            >Войти</button>
+            <Link to="/register">Зарегистрироваться</Link>
+        </div>
     </div>
 }

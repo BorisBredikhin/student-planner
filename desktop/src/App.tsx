@@ -14,6 +14,7 @@ import {Discipline} from "./components/Discipline"
 import {AddTask} from "./components/AddTask"
 import {TaskView} from "./components/TaskView"
 import {CurrentTaskList} from "./components/CurrentTaskList"
+import {RegisterForm} from "./components/RegisterForm"
 
 
 function App() {
@@ -53,7 +54,17 @@ function App() {
                 </Route>
             </BrowserRouter>
         </div>
-    ) : <LoginForm setToken={setToken}/>
+    ) : <BrowserRouter>
+        <Route path="/" exact>
+            <LoginForm setToken={setToken}/>
+        </Route>
+        <Route path="/login">
+            <LoginForm setToken={setToken}/>
+        </Route>
+        <Route path="/register">
+            <RegisterForm setToken={setToken}/>
+        </Route>
+    </BrowserRouter>
 }
 
 export default App
