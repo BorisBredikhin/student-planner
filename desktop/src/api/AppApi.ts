@@ -165,8 +165,24 @@ export default class AppApi extends Api {
         return (token = json.key)
     }
 
-    public async addDiscipline(data: FormData) {
-        return await this.postFormData("/api/discipline/", data)
+    async register(username: string, email: string, password1: string, password2: string) {
+        const data = {username, email, password1, password2}
+        const formData = new FormData()
+
+        for (var key in data)
+            { // @ts-ignore
+                formData.append(key, data[key])
+            }
+
+        let r = await fetch(apiRoot + "/rest-auth/registration/", {
+            method: "POST",
+            body: formData
+        })
+
+        if (r.status == 500) { // особенность rest-auth
+            alert("Пользователь успешно зарегистрирован")
+            document.location.href = "/"
+        }
     }
 }
 
