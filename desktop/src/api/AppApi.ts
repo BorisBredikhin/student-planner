@@ -30,7 +30,7 @@ export class Task {
         this.weight_id = json.weight_id
     }
 
-    get mark(): number | string {
+    mark(): number | string {
         console.log(this)
         return this.is_completed && this.denGe0()
             ? this.mark_numerator! / this.mark_denominator! : "N/A"

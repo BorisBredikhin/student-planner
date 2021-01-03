@@ -10,7 +10,7 @@ export function TaskView(){
     const context = useContext(AppContext)
     let {id} = useParams<{id: string}>()
     let [loaded, setLoaded] = useState<Task | null>(null)
-    
+
     useEffect(() => {
         if (!loaded)
             context
@@ -32,8 +32,14 @@ export function TaskView(){
             .appApi
             .Task
             .saveMark(loaded!.pk, numerator, denominator)
+        loaded!.mark_denominator = parseInt(denominator)
+        loaded!.mark_numerator = parseInt(numerator)
+        setLoaded(loaded)
     }
 
+    let inputStyle = {
+        width: "3em"
+    }
     return <div>
         <h1>Задача {loaded.title}</h1>
         <div style={{
@@ -42,14 +48,14 @@ export function TaskView(){
             margin: "1em auto"
         }}>{loaded.description}
         {loaded.is_completed?
-            <p>Оценка: {loaded.mark}</p>:
+            <p>Оценка: {loaded.mark() as number * 100}%</p>:
             <div>
                 <div>
                     <p>Сдать до {loaded.due_time}</p>
                     <p>Приоритет: {loaded.priority}</p>
                 </div>
                 <div>
-                    Оценка <input type="number" id="numerator"/> / <input type="number" id="denominator"/> <button onClick={save}>Сохранить</button>
+                    Оценка <input type="number" id="numerator" style={inputStyle}/> / <input type="number" id="denominator" style={inputStyle}/> <button onClick={save}>Сохранить</button>
                 </div>
             </div>
         }
