@@ -26,7 +26,7 @@ export function MySemestersList() {
                     key={s.id}
                     to={`/s/${s.id}`}
                     style={linkSytle}
-                >{s.name}</Link
+                >{s.name} (Средний балл {s.avg_mark*100})</Link
                 >)}
     </div>
 }

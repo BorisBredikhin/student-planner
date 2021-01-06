@@ -1,7 +1,15 @@
 import {Link, useParams} from "react-router-dom";
 import React, {useContext, useEffect, useState} from "react";
-import {Discipline as Dis} from "../api/AppApi";
+import {Discipline as Dis, Task} from "../api/AppApi"
 import {AppContext} from "../appContext";
+
+function TaskTile(props: { task: Task }) {
+    return <div>
+        <strong>{props.task.title}</strong>
+        {props.task.is_completed ? ((props.task.mark() === "N/A")?<p>Завершено</p>:<p>Сдано на {props.task.mark() as number*100}%</p>) : <p>Сдать до {props.task.due_time}</p>}
+        <Link to={`/t/${props.task.pk}`}>Подробнее</Link>
+    </div>
+}
 
 export function Discipline(){
     const context = useContext(AppContext)
@@ -19,7 +27,7 @@ export function Discipline(){
                 })
     })
 
-    if (!loaded) {
+    if (loaded === null) {
         return <p>l</p>
     }
 
@@ -30,12 +38,9 @@ export function Discipline(){
             <Link to={"/s/"+loaded!.semester_id}>К семестру</Link>
         </div>
         <h2>{loaded!.name}</h2>
-        <ul className="tasklist">
-            {loaded!.tasksObj.map(task => <li key={task.pk}>
-                <strong>{task.title}</strong>
-                {task.is_completed?<p>Сдано на {task.mark}</p>:<p>Сдать до {task.due_time}</p>}
-                <Link to={`/t/${task.pk}`}>Подробнее</Link>
-            </li>)}
-        </ul>
+        <p>Средний балл {(loaded!.avg_mark*100).toFixed(2)}%</p>
+        <div className="tasklist">
+            {loaded!.tasksObj.map(task => <TaskTile key={task.pk} task={new Task(task)}/>)}
+        </div>
     </div>
 }
