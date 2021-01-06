@@ -39,11 +39,17 @@
 
 .tasklist{
   list-style: none;
-  text-align: center;
+  text-align: justify;
+  margin: 0 5%;
 }
 
-.tasklist li{
+
+.tasklist > *{
   display: inline-block;
-  width: 300px;
+  max-width: 300px;
+  width: fit-content;
   height: fit-content;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
 }
