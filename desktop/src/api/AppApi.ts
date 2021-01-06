@@ -48,8 +48,10 @@ export class Discipline {
     public teachers: string
     public tasks: string
     public tasksObj: Task[]
+    public avg_mark: number
 
-    constructor(discipline: any, t: any) {
+    constructor(discipline: any, t: any, average_mark: any) {
+        console.log(discipline)
         this.id = discipline.id
         this.user = discipline.user
         this.semester_id = discipline.semester
@@ -57,6 +59,7 @@ export class Discipline {
         this.teachers = discipline.teachers
         this.tasks = discipline.tasks
         this.tasksObj = t
+        this.avg_mark = average_mark
     }
 
     private _semester?: Semester = undefined
@@ -78,14 +81,16 @@ export class Semester {
     public start_date: Date
     public end_date: Date
     public disciplines: Discipline[] = []
+    public avg_mark: number
 
-    constructor(s: any, d: any) {
+    constructor(s: any, d: any[], a: any) {
         console.log(s)
         this.id = s.id
         this.name = s.name
         this.start_date = s.start_date
         this.end_date = s.end_date
         this.disciplines = d
+        this.avg_mark = a
     }
 }
 
@@ -191,7 +196,7 @@ export class SemesterApi extends ModelAPI {
 
     async get(id: string): Promise<Semester> {
         let r = await super.get(id)
-        return new Semester(r.semester, r.disciplines)
+        return new Semester(r.semester, r.disciplines, r.average_mark)
     }
 
     async getCurrent() {
@@ -245,7 +250,7 @@ export class DisciplineAPI extends ModelAPI {
 
     async get(id: string): Promise<Discipline> {
         let r = await super.get(id)
-        let discipline = new Discipline(r.discipline, r.tasks)
+        let discipline = new Discipline(r.discipline, r.tasks, r.average_mark)
         discipline.semester = await new SemesterApi().get(
             discipline
                 .semester_id

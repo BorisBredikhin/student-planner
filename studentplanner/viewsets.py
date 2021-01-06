@@ -18,19 +18,18 @@ class SemesterViewSet(GenericViewSet):
                 "disciplines": serializers.DisciplineSerializer(
                     models.get_disciplines(sem.disciplines),
                     many=True
-                ).data
+                ).data,
+                "average_mark": sem.get_avg_mark()
             })
 
         if self.request.query_params.get("current", False):
+            semesters = serializers.SemesterSerializer(models.Semester.current_only(), many=True).data
+
+            for i in semesters:
+                i["avg_mark"] = models.Semester.objects.get(pk=i["id"]).get_avg_mark()
+
             return JsonResponse({
-                "semesters": serializers
-                    .SemesterSerializer(
-                        models
-                            .Semester
-                            .current_only(),
-                        many=True
-                )
-                .data
+                "semesters": semesters
             })
 
         return JsonResponse({
@@ -55,23 +54,25 @@ class DisciplineViewSet(GenericViewSet):
 
     def get(self, request: Request):
         if _id := self.request.query_params.get("id", False):
+            discipline = models.Discipline.objects.get(pk=_id)
             return JsonResponse({
                 "discipline": serializers.DisciplineSerializer(
-                    models.Discipline.objects.get(pk=_id)
+                    discipline
                 ).data,
                 "tasks": serializers.TaskSerializer(
                     models.Task.objects.filter(discipline_id=_id),
                     many=True
-                ).data
+                ).data,
+                "average_mark": discipline.get_avg_mark()
             })
         if semester :=  self.request.query_params.get("semester", False):
+            disciplines = serializers.DisciplineSerializer(models.Discipline.objects.filter(semester_id=semester), many=True).data
+
+            for i in disciplines:
+                i["avg_mark"] = models.Discipline.objects.get(pk=i["id"]).get_avg_mark()
+
             return JsonResponse({
-                "disciplines": serializers.DisciplineSerializer(
-                    models.Discipline.objects.filter(
-                        semester_id=semester
-                    ),
-                    many=True
-                ).data
+                "disciplines": disciplines
             })
         return JsonResponse({
             "disciplines": serializers.DisciplineSerializer(
@@ -148,7 +149,7 @@ class TaskViewSet(GenericViewSet):
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')
         elif current_only:
-            queryset = models.Task.currenr_only()
+            queryset = models.Task.current_only()
         elif incompleted_only:
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed')

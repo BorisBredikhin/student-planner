@@ -27,7 +27,7 @@ export function Discipline(){
                 })
     })
 
-    if (!loaded) {
+    if (loaded === null) {
         return <p>l</p>
     }
 
@@ -38,6 +38,7 @@ export function Discipline(){
             <Link to={"/s/"+loaded!.semester_id}>К семестру</Link>
         </div>
         <h2>{loaded!.name}</h2>
+        <p>Средний балл {(loaded!.avg_mark*100).toFixed(2)}%</p>
         <div className="tasklist">
             {loaded!.tasksObj.map(task => <TaskTile key={task.pk} task={new Task(task)}/>)}
         </div>

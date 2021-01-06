@@ -26,9 +26,13 @@ export function Semester(){
         setLoadedk(true)
     }
 
+    if (!loaded)
+        return <p/>
+
     return <div>
         <h2>Семестр {loaded?.name}</h2>
         <p>{loaded?.start_date} – {loaded?.end_date}</p>
+        <p>Средний балл {(loaded!.avg_mark*100).toFixed(2)}%</p>
         <ul>
             {
                 loaded?.disciplines.map(d=>
