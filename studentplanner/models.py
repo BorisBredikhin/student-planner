@@ -35,12 +35,17 @@ class Semester(models.Model):
         return self.start_date <= datetime.datetime.now() <= self.end_date
 
     @classmethod
-    def current_only(self):
-        return filter(lambda x: x.is_current, self.objects.all())
+    def current_only(self, uid=None):
+        return filter(
+            lambda x: x.is_current,
+            self.objects.all()
+                if uid is None
+            else self.objects.filter(user=uid)
+        )
 
     def get_avg_mark(self):
         disciplines = list(get_disciplines(self.disciplines))
-        return sum(map(lambda d: d.get_avg_mark(), disciplines))/len(disciplines)
+        return sum(map(lambda d: d.get_avg_mark(), disciplines))/len(disciplines) if len(disciplines) > 0 else 0
 
 
 class Teacher(models.Model):
@@ -64,6 +69,7 @@ class Discipline(models.Model):
     def currenr_only(self):
         return filter(lambda x: x.is_current, self.semester.objects.all())
 
+
     def get_avg_mark(self):
         disciplines_tasks = Task.objects.filter(discipline_id=self.pk)
 
@@ -75,7 +81,7 @@ class Discipline(models.Model):
             avg_mark += task.mark_numerator
             n += task.mark_denominator
 
-        return avg_mark/n
+        return avg_mark/n if n > 0 else 0
 
 
 class Weight(models.Model):
@@ -106,5 +112,5 @@ class Task(models.Model):
         return datetime.datetime.now().date() <= self.due_time
 
     @classmethod
-    def current_only(self):
-        return filter(lambda x: x.is_current, self.objects.all())
+    def current_only(self, uid):
+        return filter(lambda x: x.is_current, Task.objects.filter(user_id=uid))

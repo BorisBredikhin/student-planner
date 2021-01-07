@@ -23,7 +23,7 @@ class SemesterViewSet(GenericViewSet):
             })
 
         if self.request.query_params.get("current", False):
-            semesters = serializers.SemesterSerializer(models.Semester.current_only(), many=True).data
+            semesters = serializers.SemesterSerializer(models.Semester.current_only(self.request.user), many=True).data
 
             for i in semesters:
                 i["avg_mark"] = models.Semester.objects.get(pk=i["id"]).get_avg_mark()
@@ -149,7 +149,7 @@ class TaskViewSet(GenericViewSet):
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed and {datetime.date.today().strftime("YYYY-MM-DD")} <= studentplanner_task.due_time')
         elif current_only:
-            queryset = models.Task.current_only()
+            queryset = models.Task.current_only(request.user)
         elif incompleted_only:
             queryset = models.Task.objects.raw(
                 f'select * from studentplanner_task where user_id={request.user.pk} and not is_completed')
